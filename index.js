@@ -127,8 +127,8 @@ async function runAnchor(browser) {
         await page.evaluateHandle(
           () => (document.querySelector(".rdtDay").innerHTML = "na")
         );
-        await page.evaluateHandle(
-          () => (document.querySelector(".rdtDay").classList.remove("rdtDay"))
+        await page.evaluateHandle(() =>
+          document.querySelector(".rdtDay").classList.remove("rdtDay")
         );
       } else {
         break;
@@ -253,6 +253,24 @@ async function runAnchor(browser) {
   }
 }
 
+async function runSubsplash(browser) {
+  //open new page
+  const page = await browser.newPage();
+  //Navigate to Webpage
+  await page.goto("https://dashboard.subsplash.com/auth/login");
+  //Login to website
+  await page.type("#email", "tcrain@metbiblechurch.ca");
+  await page.type("#password", "Kallooer2");
+  const [loginButton] = await page.$x("//button[contains(text(),'Log in')]");
+  if (loginButton) {
+    await loginButton.click();
+  }
+  //Navigate to Library
+  const element = await page.waitForSelector('[app-id="22777"]');
+  let value = await page.evaluate(el => el.shadowRoot.querySelector('[data-testid="dashboard-Library"]'), element);
+  await value.click();
+}
+
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
@@ -260,5 +278,6 @@ async function runAnchor(browser) {
     args: ["--start-maximized"],
   });
 
-  runAnchor(browser);
+  //runAnchor(browser);
+  runSubsplash(browser);
 })();
