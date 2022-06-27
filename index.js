@@ -265,10 +265,49 @@ async function runSubsplash(browser) {
   if (loginButton) {
     await loginButton.click();
   }
+
+  const sidebarHandle = await page.waitForSelector('[app-id="22777"]');
+
   //Navigate to Library
-  const element = await page.waitForSelector('[app-id="22777"]');
-  let value = await page.evaluate(el => el.shadowRoot.querySelector('[data-testid="dashboard-Library"]'), element);
-  await value.click();
+  let libraryHandle = await page.evaluateHandle(
+    (el) => el.shadowRoot.querySelector('[data-testid="dashboard-Library"]'),
+    sidebarHandle
+  );
+  await libraryHandle.click();
+
+  //Navigate to Lists
+  let listsHandle = await page.evaluateHandle(
+    (el) =>
+      el.shadowRoot.querySelector('[data-testid="Library-dashboard-Lists"]'),
+    sidebarHandle
+  );
+  await listsHandle.click();
+
+  const mainHandle = await page.waitForSelector('[class="route-app__main"]');
+
+  //Navigate to Listen
+  await page.waitForTimeout(generalTimer);
+  let listenHandle = await page.evaluateHandle(
+    (el) => el.querySelector('[id="ember276"]'),
+    mainHandle
+  );
+  await listenHandle.click();
+
+  //Navigate to sermon series
+  await page.waitForTimeout(generalTimer);
+  let seriesButton = await page.evaluateHandle((el) => el.querySelectorAll(".kit-row-item__title")[1], mainHandle);
+  await seriesButton.click();
+
+  //Click the Create Media Item Button
+  await page.waitForTimeout(generalTimer);
+  await page.click("#ember1262");
+
+  //Type Episode Title and confirm
+  await page.waitForTimeout(generalTimer);
+  await page.type("#ember1268",weeklyUploadsInformation[0].title);
+  await page.waitForTimeout(generalTimer);
+  let createButton = await page.evaluate((el) => el.querySelector("#ember1337").firstChild.lastElementChild.textContent, mainHandle);
+  console.log(createButton)
 }
 
 (async () => {
